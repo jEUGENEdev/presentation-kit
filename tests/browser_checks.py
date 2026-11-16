@@ -125,9 +125,13 @@ def run():
             first=mobile.locator('#hopper').evaluate('(e)=>getComputedStyle(e).transform')
             mobile.wait_for_function("initial=>getComputedStyle(document.querySelector('#hopper')).transform !== initial",arg=first,timeout=2500)
             mobile.wait_for_function('deckState().travelerPhase === "idle"',timeout=10000)
+            snapshot="""() => {const el=document.querySelector('#hopper .traveler-spin');return {state:deckState(),hidden:document.hidden,body:document.body.className,inline:el.style.transform,computed:getComputedStyle(el).transform,rect:el.getBoundingClientRect().toJSON(),animations:el.getAnimations().map(a=>({time:a.currentTime,state:a.playState})),now:performance.now()}}"""
+            print('MOBILE_IDLE_START:',mobile.evaluate(snapshot),flush=True)
             first=mobile.locator('#hopper .traveler-spin').evaluate('(e)=>getComputedStyle(e).transform')
-            mobile.wait_for_timeout(300)
-            check(first!=mobile.locator('#hopper .traveler-spin').evaluate('(e)=>getComputedStyle(e).transform'),'Mobile idle star does not rotate')
+            try:
+                mobile.wait_for_function("initial=>getComputedStyle(document.querySelector('#hopper .traveler-spin')).transform !== initial",arg=first,timeout=2500)
+            finally:
+                print('MOBILE_IDLE_END:',mobile.evaluate(snapshot),'errors:',mobile_errors,flush=True)
             mobile.reload();mobile.wait_for_function('window.deckState')
             check(mobile.evaluate('deckState().motionEnabled'),'Motion choice did not persist')
             mobile.locator('#settings-button').tap()

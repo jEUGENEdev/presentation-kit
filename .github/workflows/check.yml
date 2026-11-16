@@ -25,6 +25,8 @@ jobs:
           python -m unittest discover -s tests -v
           node --check src/deck.js
           git diff --exit-code -- dist/index.html
+      - name: Package identifiable HTML
+        run: python scripts/package_delivery.py
       - name: Browser regression checks
         run: python tests/browser_checks.py
       - name: Capture all slides
@@ -42,4 +44,5 @@ jobs:
             dist/star-guard-deck.pdf
             build/shots/
             build/mobile-ui/
+            build/delivery/
           if-no-files-found: error

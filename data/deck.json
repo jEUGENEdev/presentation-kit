@@ -8,47 +8,220 @@
   "qr_asset": "",
   "test_date": "12.11.2026",
   "team_members": [
-    {"handle": "h0o0p0e", "name": "", "role": ""},
-    {"handle": "Ar6yZxZ", "name": "", "role": ""},
-    {"handle": "mpstrkv", "name": "", "role": ""},
-    {"handle": "nenerower", "name": "", "role": ""},
-    {"handle": "writenowme", "name": "", "role": ""}
+    {
+      "handle": "h0o0p0e",
+      "name": "",
+      "role": ""
+    },
+    {
+      "handle": "Ar6yZxZ",
+      "name": "",
+      "role": ""
+    },
+    {
+      "handle": "mpstrkv",
+      "name": "",
+      "role": ""
+    },
+    {
+      "handle": "nenerower",
+      "name": "",
+      "role": ""
+    },
+    {
+      "handle": "writenowme",
+      "name": "",
+      "role": ""
+    }
   ],
   "heuristics": [
-    {"key": "daily_burst", "label": "Всплески по дням", "weight": 30, "active": true},
-    {"key": "dev_activity", "label": "Звёзды без разработки", "weight": 25, "active": true},
-    {"key": "fork_ratio", "label": "Форки у молодого репо", "weight": 20, "active": true},
-    {"key": "intraday_burst", "label": "Всплески внутри суток", "weight": 10, "active": false},
-    {"key": "star_drops", "label": "Массовые отписки", "weight": 10, "active": false},
-    {"key": "hourly_profile", "label": "Нетипичные часы", "weight": 5, "active": false}
+    {
+      "key": "daily_burst",
+      "label": "Всплески по дням",
+      "weight": 30,
+      "active": true
+    },
+    {
+      "key": "dev_activity",
+      "label": "Звёзды без разработки",
+      "weight": 25,
+      "active": true
+    },
+    {
+      "key": "fork_ratio",
+      "label": "Форки у молодого репо",
+      "weight": 20,
+      "active": true
+    },
+    {
+      "key": "intraday_burst",
+      "label": "Всплески внутри суток",
+      "weight": 10,
+      "active": false
+    },
+    {
+      "key": "star_drops",
+      "label": "Массовые отписки",
+      "weight": 10,
+      "active": false
+    },
+    {
+      "key": "hourly_profile",
+      "label": "Нетипичные часы",
+      "weight": 5,
+      "active": false
+    }
   ],
   "cases": [
-    {"repo": "facebook/react", "score": 13, "reason": "Стабильный рост и активная разработка", "hits": []},
-    {"repo": "deepseek-ai/DeepInfer", "score": 67, "reason": "1 071 звезда за день при обычном темпе 3", "hits": ["daily_burst"]},
-    {"repo": "Minireel/HGhub", "score": 85, "reason": "Мало разработки, необычное соотношение форков", "hits": ["dev_activity", "fork_ratio"]}
+    {
+      "repo": "facebook/react",
+      "score": 13,
+      "reason": "Стабильный рост и активная разработка",
+      "hits": []
+    },
+    {
+      "repo": "deepseek-ai/DeepInfer",
+      "score": 67,
+      "reason": "1 071 звезда за день при обычном темпе 3",
+      "hits": [
+        "daily_burst"
+      ]
+    },
+    {
+      "repo": "Minireel/HGhub",
+      "score": 85,
+      "reason": "Мало разработки, необычное соотношение форков",
+      "hits": [
+        "dev_activity",
+        "fork_ratio"
+      ]
+    }
   ],
   "results": [
-    {"repo": "Minireel/HGhub", "score": 85, "group": "flagged"},
-    {"repo": "deepseek-ai/DeepInfer", "score": 67, "group": "flagged"},
-    {"repo": "janestreet/agent_skills", "score": 53, "group": "flagged"},
-    {"repo": "huamidev/GestaltX", "score": 47, "group": "flagged"},
-    {"repo": "Adkid-Zephyr/anti-defensive…", "score": 44, "group": "flagged"},
-    {"repo": "spring-projects/spring-boot", "score": 20, "group": "organic"},
-    {"repo": "facebook/react", "score": 13, "group": "organic"},
-    {"repo": "microsoft/vscode", "score": 13, "group": "organic"},
-    {"repo": "torvalds/linux", "score": 0, "group": "organic"},
-    {"repo": "ollama/ollama", "score": 0, "group": "organic"},
-    {"repo": "sindresorhus/awesome", "score": 0, "group": "organic"},
-    {"repo": "codecrafters-io/build-your-own-x", "score": 0, "group": "organic"},
-    {"repo": "donnemartin/system-design-primer", "score": 0, "group": "organic"},
-    {"repo": "NotRexed/Hookshot", "score": 0, "group": "organic"},
-    {"repo": "sherlock-project/sherlock", "score": 96, "group": "viral"},
-    {"repo": "dockur/windows", "score": 36, "group": "viral"}
+    {
+      "repo": "Minireel/HGhub",
+      "score": 85,
+      "group": "flagged"
+    },
+    {
+      "repo": "deepseek-ai/DeepInfer",
+      "score": 67,
+      "group": "flagged"
+    },
+    {
+      "repo": "janestreet/agent_skills",
+      "score": 53,
+      "group": "flagged"
+    },
+    {
+      "repo": "huamidev/GestaltX",
+      "score": 47,
+      "group": "flagged"
+    },
+    {
+      "repo": "Adkid-Zephyr/anti-defensive…",
+      "score": 44,
+      "group": "flagged"
+    },
+    {
+      "repo": "spring-projects/spring-boot",
+      "score": 20,
+      "group": "organic"
+    },
+    {
+      "repo": "facebook/react",
+      "score": 13,
+      "group": "organic"
+    },
+    {
+      "repo": "microsoft/vscode",
+      "score": 13,
+      "group": "organic"
+    },
+    {
+      "repo": "torvalds/linux",
+      "score": 0,
+      "group": "organic"
+    },
+    {
+      "repo": "ollama/ollama",
+      "score": 0,
+      "group": "organic"
+    },
+    {
+      "repo": "sindresorhus/awesome",
+      "score": 0,
+      "group": "organic"
+    },
+    {
+      "repo": "codecrafters-io/build-your-own-x",
+      "score": 0,
+      "group": "organic"
+    },
+    {
+      "repo": "donnemartin/system-design-primer",
+      "score": 0,
+      "group": "organic"
+    },
+    {
+      "repo": "NotRexed/Hookshot",
+      "score": 0,
+      "group": "organic"
+    },
+    {
+      "repo": "sherlock-project/sherlock",
+      "score": 96,
+      "group": "viral"
+    },
+    {
+      "repo": "dockur/windows",
+      "score": 36,
+      "group": "viral"
+    }
   ],
-  "tracker": {"repositories": 10559, "interval_seconds": 300, "cycle_seconds": 270, "reported_requests_hour": 1300, "reported_limit_hour": 5000},
+  "tracker": {
+    "repositories": 10559,
+    "interval_seconds": 300,
+    "cycle_seconds": 270,
+    "reported_requests_hour": 1300,
+    "reported_limit_hour": 5000
+  },
   "load": [
-    {"threads": 1, "seconds": 500, "comment": "Не укладывается в 300 секунд", "status": "slow"},
-    {"threads": 2, "seconds": 270, "comment": "Без ошибок в предоставленном тесте", "status": "ok"},
-    {"threads": 4, "seconds": 65, "comment": "Около половины запросов отклонено", "status": "errors"}
-  ]
+    {
+      "threads": 1,
+      "seconds": 500,
+      "comment": "Не укладывается в 300 секунд",
+      "status": "slow"
+    },
+    {
+      "threads": 2,
+      "seconds": 270,
+      "comment": "Без ошибок в предоставленном тесте",
+      "status": "ok"
+    },
+    {
+      "threads": 4,
+      "seconds": 65,
+      "comment": "Около половины запросов отклонено",
+      "status": "errors"
+    }
+  ],
+  "appearance": {
+    "default_theme": "light",
+    "traveler": {
+      "default": "star",
+      "per_slide": {
+        "s4": "packet",
+        "s8": "bug",
+        "s11": "shield"
+      },
+      "characters": {
+        "star": "★",
+        "shield": "⛨",
+        "bug": "🐞",
+        "owl": "🦉",
+        "packet": "⬡"
+      }
+    }
+  }
 }

@@ -21,6 +21,16 @@ def load_data(root=ROOT):
     return data
 
 def validate_data(data):
+    appearance=data.get('appearance',{})
+    if appearance.get('default_theme','light') not in {'light','dark'}:
+        raise ValueError('Theme must be light or dark')
+    traveler=appearance.get('traveler',{})
+    characters=traveler.get('characters',{})
+    if characters:
+        if traveler.get('default') not in characters or any(v not in characters for v in traveler.get('per_slide',{}).values()):
+            raise ValueError('Unknown traveler character')
+        if any(not isinstance(g,str) or not 1 <= len(g) <= 8 for g in characters.values()):
+            raise ValueError('Traveler glyphs must be short text')
     if len(data['team_members']) != 5:
         raise ValueError('Expected five contributors')
     if len(data['heuristics']) != 6 or sum(x['weight'] for x in data['heuristics']) != 100:
@@ -86,7 +96,7 @@ def fragments(data, root):
         for r in data['results']:
             if r['group'] != group: continue
             color={'low':'#078659','medium':'#b7740b','high':'#dc651b','critical':'#dc347a'}[level(r['score'])]
-            result+=f'<tr data-result="{escape(group)}"><td>{escape(r["repo"])}</td><td style="color:{color}">{r["score"]}</td></tr>'
+            result+=f'<tr data-result="{escape(group)}"><td>{escape(r["repo"])}</td><td data-level="{level(r["score"])}" style="color:{color}">{r["score"]}</td></tr>'
         return result
     header='<thead><tr><th scope="col">Репозиторий</th><th scope="col">Score</th></tr></thead>'
     tables=f'<table><caption>НАКРУТКА ПО РАЗМЕТКЕ КОМАНДЫ / 5</caption>{header}<tbody>{rows("flagged")}<tr class="group-row"><td colspan="2">ВИРУСНЫЙ РОСТ / 2 ЛОЖНЫХ СИГНАЛА</td></tr>{rows("viral")}</tbody></table><table><caption>ОРГАНИКА БЕЗ ВИРУСНОЙ ВОЛНЫ / 9</caption>{header}<tbody>{rows("organic")}</tbody></table>'

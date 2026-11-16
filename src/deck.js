@@ -7,6 +7,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const exporting = new URLSearchParams(location.search).get('export') === '1';
   let current = -1, paused = false, printMode = false, caseIndex = 0;
+  let travelerChoice = 'auto', themeBeforePrint = null;
   let generation = 0, pointerStart = null, ignoreClickUntil = 0;
   const timers = new Set(), frames = new Set(), effects = new Set();
   const motionAllowed = () => !paused && !reduced.matches && !exporting && !printMode && !document.hidden;
@@ -27,6 +28,20 @@
     const animation = el.animate(keyframes, options); effects.add(animation);
     return animation.finished.catch(() => {}).finally(() => effects.delete(animation));
   };
+  const names={auto:'автоматически по слайду',star:'звезда',shield:'щит',bug:'жучок',owl:'сова',packet:'пакет данных'};
+  const appearance=data.appearance || {default_theme:'light',traveler:{default:'star',per_slide:{},characters:{star:'★'}}};
+  const params=new URLSearchParams(location.search);
+  const saved=key=>{try{return localStorage.getItem('presentation-kit:'+key);}catch{return null;}};
+  const save=(key,value)=>{try{localStorage.setItem('presentation-kit:'+key,value);}catch{/* file previews can deny local storage */}};
+  const setTheme=(value,persist=false)=>{const theme=value==='dark'?'dark':'light';document.body.dataset.theme=theme;$('#theme-button').setAttribute('aria-pressed',String(theme==='dark'));$('#theme-button').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');if(persist)save('theme',theme);};
+  setTheme(params.get('theme') || (exporting ? 'light' : saved('theme')) || appearance.default_theme);
+  const choices=['auto',...Object.keys(appearance.traveler.characters)];
+  const requested=params.get('traveler') || (!exporting && saved('traveler'));
+  if(choices.includes(requested))travelerChoice=requested;
+  const setTraveler=()=>{const kind=travelerChoice==='auto'?(appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default):travelerChoice;const glyph=appearance.traveler.characters[kind] || '★';$('#hopper').textContent=glyph;$('#hopper').dataset.kind=kind;$('#traveler-button').textContent=glyph;$('#traveler-button').setAttribute('aria-label','Персонаж: '+(names[travelerChoice] || travelerChoice));};
+  const theme=()=>setTheme(document.body.dataset.theme==='dark'?'light':'dark',true);
+  const traveler=()=>{travelerChoice=choices[(choices.indexOf(travelerChoice)+1)%choices.length];save('traveler',travelerChoice);setTraveler();play();};
+  $('#theme-button').addEventListener('click',theme);$('#traveler-button').addEventListener('click',traveler);
   const format = n => Math.round(n).toLocaleString('ru-RU');
   const level = v => v >= 85 ? ['critical', '#dc347a'] : v >= 60 ? ['high', '#dc651b'] : v >= 30 ? ['medium', '#b7740b'] : ['low', '#078659'];
   const fit = () => { stage.style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; };
@@ -45,7 +60,7 @@
   bars('#viral-chart', Array.from({length:96}, (_,i) => 6 + 69*Math.exp(-Math.pow((i-47)/22,2)) + i*7%5), v => v > 30);
   let seed = 17; const random = () => (seed = seed * 16807 % 2147483647) / 2147483647;
   const colors = ['#edf0ed','#d8ecda','#96cfa2','#47aa6d','#168646'];
-  for (let i = 0; i < 182; i++) { const cell = document.createElement('i'); cell.style.background = Math.floor(i/7) === 19 ? '#dc347a' : colors[Math.floor(random()*5)]; $('#contribution-grid').append(cell); }
+  for (let i = 0; i < 182; i++) { const cell = document.createElement('i'); if(Math.floor(i/7)===19)cell.className='spike'; cell.style.background = Math.floor(i/7) === 19 ? '#dc347a' : colors[Math.floor(random()*5)]; $('#contribution-grid').append(cell); }
   for (let i = 0; i < 32; i++) { const piece = document.createElement('i'); piece.className = 'confetti-piece'; piece.style.cssText = `--x:${random()*100}%;--delay:${-random()*4.5}s;--piece-color:${['#3557eb','#7945e8','#dc347a','#ffcf3e'][i%4]}`; $('#confetti').append(piece); }
   // Original pixel owl, retained from the supplied kit.
   const owl = ['...k........k...','..kbk......kbk..','..kbbkkkkkkbbk..','.kbbbbbbbbbbbbk.','.kbwwwwbbwwwwbk.','kbwwppwbbwppwwbk','kbwwppwyywppwwbk','.kbwwwwyywwwwbk.','.kbbbbbbbbbbbbk.','.kbdllllllllldk.','.kbllgllllgllbk.','.kbllllllllllbk.','..kbllgllgllbk..','..kkbbbbbbbbkk..','...kookkkkook...','................'];
@@ -57,7 +72,7 @@
 
   const updateCase = (index, animated = true) => {
     caseIndex = index % data.cases.length;
-    const item = data.cases[caseIndex], [label,color] = level(item.score), gauge = $('#gauge');
+    const item = data.cases[caseIndex], [label] = level(item.score), color = `var(--${{low:'green',medium:'amber',high:'orange',critical:'pink'}[label]})`, gauge = $('#gauge');
     $('#case-repo').textContent=item.repo; $('#case-reason').textContent=item.reason; $('#score-level').textContent=label.toUpperCase();
     gauge.style.setProperty('--score-color',color);
     $$('.heuristic').forEach(el => el.classList.toggle('hit',item.hits.includes(el.dataset.key)));
@@ -87,7 +102,7 @@
     }
   };
   const play = () => {
-    stopEffects(); const slide=slides[current], token=generation;
+    stopEffects(); $$('.heuristic').forEach(el=>el.classList.remove('checking')); const slide=slides[current], token=generation;
     if(!slide) return;
     $$('[data-count]',slide).forEach(el => el.textContent=(el.dataset.prefix||'')+format(Number(el.dataset.count)));
     if(slide.id==='s7')updateCase(caseIndex,false);
@@ -97,7 +112,11 @@
       const tick = t => {if(token!==generation)return;const p=Math.min((t-start)/1700,1);el.textContent=(el.dataset.prefix||'')+format(target*(1-(1-p)**3));if(p<1)frame(tick);};frame(tick);
     });
     later(()=>hops(slide,token),900);
-    if(slide.id==='s7')every(()=>updateCase(caseIndex+1),4400);
+    if(slide.id==='s7'){
+      every(()=>updateCase(caseIndex+1),4400);
+      let checkIndex=0;const checks=$$('.heuristic');
+      every(()=>{checks.forEach((el,i)=>el.classList.toggle('checking',i===checkIndex%checks.length));checkIndex++;},650);
+    }
     if(slide.id==='s8'){let n=0;const rows=$$('.method-step',slide);every(()=>{rows.forEach((r,i)=>r.classList.toggle('lit',i===n%rows.length));n++;},1400);}
     if(slide.id==='s9'){let n=0;const rows=$$('tbody tr[data-result]',slide);every(()=>{rows.forEach((r,i)=>r.classList.toggle('scan',i===n%rows.length));n++;},900);}
   };
@@ -108,7 +127,7 @@
     const next=Math.max(0,Math.min(slides.length-1,Math.trunc(Number(index))||0));
     if(next===current)return;
     const old=slides[current]; if(old?.contains(document.activeElement)) document.activeElement.blur();
-    current=next;
+    current=next;setTraveler();
     slides.forEach((s,i)=>{s.classList.toggle('active',i===current);s.setAttribute('aria-hidden',String(i!==current));s.inert=i!==current;});
     $('#counter').textContent=`${current+1} / ${slides.length}`; $('#page-label').textContent=slides[current].dataset.page;
     $('#progress').style.width=`${(current+1)/slides.length*100}%`;$('#prev').disabled=current===0;$('#next').disabled=current===slides.length-1;
@@ -138,6 +157,7 @@
     else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
     else if(e.key==='Home'){e.preventDefault();go(0);}else if(e.key==='End'){e.preventDefault();go(slides.length-1);}
     else if(['n','т'].includes(e.key.toLowerCase()))notes();else if(['f','а'].includes(e.key.toLowerCase()))fullscreen();
+    else if(['t','е'].includes(e.key.toLowerCase()))theme();else if(['p','з'].includes(e.key.toLowerCase()))traveler();
     else if(['m','ь'].includes(e.key.toLowerCase()))motion();else if(['o','щ'].includes(e.key.toLowerCase()))openOverview();
   });
   viewport.addEventListener('pointerdown',e=>{if(!interactive(e.target)&&e.isPrimary)pointerStart={x:e.clientX,y:e.clientY,id:e.pointerId};});
@@ -148,9 +168,9 @@
   window.addEventListener('hashchange',()=>go(fromHash()));
   reduced.addEventListener('change',()=>{document.body.classList.toggle('reduced',reduced.matches);play();});
   document.addEventListener('visibilitychange',()=>play());
-  window.addEventListener('beforeprint',()=>{printMode=true;stopEffects();updateCase(0,false);});
-  window.addEventListener('afterprint',()=>{printMode=false;play();});
+  window.addEventListener('beforeprint',()=>{printMode=true;themeBeforePrint=document.body.dataset.theme;setTheme('light');stopEffects();updateCase(0,false);});
+  window.addEventListener('afterprint',()=>{printMode=false;if(themeBeforePrint)setTheme(themeBeforePrint);play();});
   window.__go=go;
-  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,reduced:reduced.matches,exporting});
+  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerChoice});
   go(fromHash());
 })();

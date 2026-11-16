@@ -29,7 +29,7 @@ jobs:
         run: python tests/browser_checks.py
       - name: Capture all slides
         if: always()
-        run: python shots.py
+        run: python shots.py --theme both --review-log
       - name: Export searchable PDF
         if: always()
         run: python make_pdf.py

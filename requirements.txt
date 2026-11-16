@@ -1,3 +1,4 @@
 # Only needed for browser checks, screenshots and PDF. Build uses the stdlib.
 playwright>=1.49,<2
 pypdf>=5,<7
+Pillow>=10,<13

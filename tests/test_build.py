@@ -54,6 +54,11 @@ class BuildTests(unittest.TestCase):
         with self.assertRaises(ValueError):build.validate_data(data)
         data['landing_url']='https://example.com';data['qr_asset']='../private.png'
         with self.assertRaises(ValueError):build.qr_block(data,build.ROOT)
+    def test_theme_and_traveler_validation(self):
+        data=build.load_data();data['appearance']['default_theme']='invalid'
+        with self.assertRaises(ValueError):build.validate_data(data)
+        data=build.load_data();data['appearance']['traveler']['per_slide']['s4']='unknown'
+        with self.assertRaises(ValueError):build.validate_data(data)
     def test_unknown_placeholder_fails(self):
         with self.assertRaises(ValueError):build.substitute('{{UNKNOWN}}',{})
 

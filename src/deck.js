@@ -7,7 +7,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const exporting = new URLSearchParams(location.search).get('export') === '1';
   let current = -1, paused = false, forceMotion = false, printMode = false, caseIndex = 0;
-  let travelerChoice = 'auto', themeBeforePrint = null;
+  let themeBeforePrint = null;
   let generation = 0, pointerStart = null, ignoreClickUntil = 0;
   const timers = new Set(), frames = new Set(), effects = new Set();
   const motionAllowed = () => !paused && (!reduced.matches || forceMotion) && !exporting && !printMode && !document.hidden;
@@ -19,16 +19,16 @@
     timers.forEach(id => { clearTimeout(id); clearInterval(id); }); timers.clear();
     frames.forEach(cancelAnimationFrame); frames.clear();
     effects.forEach(a => a.cancel()); effects.clear();
-    $('#hopper').getAnimations().forEach(a => a.cancel());
+    $('#hopper').getAnimations({subtree:true}).forEach(a => a.cancel());
+    $('#hopper').dataset.phase='stopped';
     $$('.dust').forEach(e => e.remove());
     $('#hopper').style.visibility = 'hidden';
   };
   const animate = (el, keyframes, options) => {
     if (!motionAllowed()) return Promise.resolve();
     const animation = el.animate(keyframes, options); effects.add(animation);
-    return animation.finished.catch(() => {}).finally(() => effects.delete(animation));
+    return animation.finished.catch(() => {}).finally(() => {effects.delete(animation);if(animation.playState==='finished'){try{animation.commitStyles();}catch{/* detached or hidden */}animation.cancel();}});
   };
-  const names={auto:'автоматически по слайду',star:'звезда',shield:'щит',bug:'жучок',owl:'сова',packet:'пакет данных'};
   const appearance=data.appearance || {default_theme:'light',traveler:{default:'star',per_slide:{},characters:{star:'★'}}};
   const params=new URLSearchParams(location.search);
   const saved=key=>{try{return localStorage.getItem('presentation-kit:'+key);}catch{return null;}};
@@ -49,13 +49,9 @@
   syncMotionUI();
   const setTheme=(value,persist=false)=>{const theme=value==='dark'?'dark':'light';document.body.dataset.theme=theme;$('#theme-button').setAttribute('aria-pressed',String(theme==='dark'));$('#theme-button').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');$('#theme-button').textContent=theme==='dark'?'Включить светлую тему':'Включить тёмную тему';if(persist)save('theme',theme);};
   setTheme(params.get('theme') || (exporting ? 'light' : saved('theme')) || appearance.default_theme);
-  const choices=['auto',...Object.keys(appearance.traveler.characters)];
-  const requested=params.get('traveler') || (!exporting && saved('traveler'));
-  if(choices.includes(requested))travelerChoice=requested;
-  const setTraveler=()=>{const kind=travelerChoice==='auto'?(appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default):travelerChoice;const glyph=appearance.traveler.characters[kind] || '★';$('#hopper').textContent=glyph;$('#hopper').dataset.kind=kind;$('#traveler-select').value=travelerChoice;};
+  const setTraveler=()=>{const kind=appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default;const glyph=appearance.traveler.characters[kind] || '★';const spin=$('#hopper .traveler-spin');spin.replaceChildren();if(kind==='star')spin.append($('#star-template').content.cloneNode(true));else{const icon=document.createElement('span');icon.className='traveler-glyph';icon.textContent=glyph;spin.append(icon);}$('#hopper').dataset.kind=kind;};
   const theme=()=>setTheme(document.body.dataset.theme==='dark'?'light':'dark',true);
-  const traveler=()=>{travelerChoice=choices[(choices.indexOf(travelerChoice)+1)%choices.length];save('traveler',travelerChoice);setTraveler();play();};
-  $('#theme-button').addEventListener('click',theme);$('#traveler-select').addEventListener('change',e=>{travelerChoice=e.target.value;save('traveler',travelerChoice);setTraveler();play();});
+  $('#theme-button').addEventListener('click',theme);
   const format = n => Math.round(n).toLocaleString('ru-RU');
   const level = v => v >= 85 ? ['critical', '#dc347a'] : v >= 60 ? ['high', '#dc651b'] : v >= 30 ? ['medium', '#b7740b'] : ['low', '#078659'];
   const fit = () => { stage.style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; };
@@ -97,23 +93,45 @@
     const tick = time => { if(token!==generation) return; const p=Math.min((time-start)/850,1), value=from+(item.score-from)*(1-Math.pow(1-p,3)); gauge.style.setProperty('--score',value); $('#score-value').textContent=Math.round(value); if(p<1)frame(tick); };
     frame(tick);
   };
+  // Translation, squash and 3D rotation have separate layers, so landing cannot erase spin.
+  const idleTraveler=(token)=>{
+    if(token!==generation || !motionAllowed())return;
+    const hopper=$('#hopper'),body=$('.traveler-body',hopper),spin=$('.traveler-spin',hopper),shadow=$('.traveler-shadow',hopper);
+    hopper.dataset.phase='idle';
+    const loop=(element,keys,options)=>{const animation=element.animate(keys,options);effects.add(animation);};
+    loop(spin,[{transform:'rotateX(16deg) rotateY(0deg) rotateZ(-9deg)'},{transform:'rotateX(-12deg) rotateY(180deg) rotateZ(9deg)'},{transform:'rotateX(16deg) rotateY(360deg) rotateZ(-9deg)'}],{duration:6800,iterations:Infinity,easing:'linear'});
+    loop(body,[{transform:'translateY(0) scale(1)'},{transform:'translateY(-9px) scale(1)'},{transform:'translateY(0) scale(1)'}],{duration:2400,iterations:Infinity,easing:'ease-in-out'});
+    loop(shadow,[{transform:'scaleX(1)',opacity:.24},{transform:'scaleX(.72)',opacity:.12},{transform:'scaleX(1)',opacity:.24}],{duration:2400,iterations:Infinity,easing:'ease-in-out'});
+  };
   const hops = async (slide, token) => {
     if (!motionAllowed() || token!==generation) return;
-    const hopper=$('#hopper'), k=Math.min(innerWidth/1920,innerHeight/1080), sr=stage.getBoundingClientRect();
-    const point = el => {const r=el.getBoundingClientRect();return {x:Math.min(1800,Math.max(45,(r.left-sr.left+r.width*.65)/k)),y:Math.max(90,(r.top-sr.top)/k-65)};};
-    const targets = $$('[data-hop], h1, h2, .member, .metric, .method-evidence',slide).slice(0,4);
-    const title=$('h1,h2',slide); if(title) targets.push(title);
-    const points=targets.map(point); let previous={x:1750,y:850}; hopper.style.visibility='visible';
+    const hopper=$('#hopper'),body=$('.traveler-body',hopper),spin=$('.traveler-spin',hopper),shadow=$('.traveler-shadow',hopper);
+    const k=Math.min(innerWidth/1920,innerHeight/1080),sr=stage.getBoundingClientRect();
+    const point=el=>{const r=el.getBoundingClientRect();return{x:Math.min(1770,Math.max(30,(r.left-sr.left+r.width*.65)/k-50)),y:Math.max(75,(r.top-sr.top)/k-110)};};
+    const title=$('h1,h2',slide);
+    const targets=$$('[data-hop], .member, .metric, .method-evidence',slide).filter(e=>e!==title).slice(0,3);
+    const points=targets.map(point);
+    if(title){const range=document.createRange();range.selectNodeContents(title);const rects=[...range.getClientRects()].filter(r=>r.width>2);const last=rects[rects.length-1]||title.getBoundingClientRect();points.push({x:Math.min(1770,Math.max(30,(last.right-sr.left)/k+20)),y:Math.max(75,(last.top-sr.top)/k-35)});}
+    let previous={x:1740,y:840};hopper.style.visibility='visible';
+    body.style.transform='none';spin.style.transform='rotateX(16deg) rotateY(0deg) rotateZ(-9deg)';
     for(const p of points){
       if(token!==generation || !motionAllowed())return;
-      const peak=Math.min(p.y,previous.y)-160;
-      const keys=Array.from({length:17},(_,i)=>{const t=i/16;return {transform:`translate(${previous.x+(p.x-previous.x)*t}px,${(1-t)**2*previous.y+2*(1-t)*t*peak+t*t*p.y}px) rotate(${360*t}deg) scale(${1+.15*Math.sin(t*Math.PI)})`};});
-      await animate(hopper,keys,{duration:520,fill:'forwards',easing:'ease-in-out'});
+      hopper.dataset.phase='jump';
+      const peak=Math.max(20,Math.min(p.y,previous.y)-170);
+      const path=Array.from({length:25},(_,i)=>{const t=i/24;return{transform:`translate(${previous.x+(p.x-previous.x)*t}px,${(1-t)**2*previous.y+2*(1-t)*t*peak+t*t*p.y}px)`};});
+      const rotation=Array.from({length:13},(_,i)=>{const t=i/12;return{transform:`rotateX(${16+24*Math.sin(t*Math.PI)}deg) rotateY(${360*t}deg) rotateZ(${-9+720*t}deg)`};});
+      await Promise.all([
+        animate(hopper,path,{duration:820,fill:'forwards',easing:'cubic-bezier(.2,.55,.35,1)'}),
+        animate(spin,rotation,{duration:820,fill:'forwards',easing:'linear'}),
+        animate(shadow,[{opacity:.22,transform:'scaleX(1)'},{opacity:.05,transform:'scaleX(.4)'},{opacity:.22,transform:'scaleX(1)'}],{duration:820,fill:'forwards'})
+      ]);
       if(token!==generation)return;
-      await animate(hopper,[{transform:`translate(${p.x}px,${p.y}px) scale(1.25,.75)`},{transform:`translate(${p.x}px,${p.y}px) scale(1)`}],{duration:160,fill:'forwards'});
+      hopper.dataset.phase='landing';
+      await animate(body,[{transform:'translateY(4px) scale(1.18,.78)'},{transform:'translateY(-5px) scale(.94,1.06)'},{transform:'translateY(0) scale(1)'}],{duration:260,fill:'forwards',easing:'ease-out'});
       if(token!==generation)return;
       previous=p;
     }
+    idleTraveler(token);
   };
   const play = () => {
     stopEffects(); $$('.heuristic').forEach(el=>el.classList.remove('checking')); const slide=slides[current], token=generation;
@@ -179,7 +197,7 @@
     else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
     else if(e.key==='Home'){e.preventDefault();go(0);}else if(e.key==='End'){e.preventDefault();go(slides.length-1);}
     else if(['n','т'].includes(e.key.toLowerCase()))notes();else if(['f','а'].includes(e.key.toLowerCase()))fullscreen();
-    else if(['t','е'].includes(e.key.toLowerCase()))theme();else if(['p','з'].includes(e.key.toLowerCase()))traveler();
+    else if(['t','е'].includes(e.key.toLowerCase()))theme();
     else if(['m','ь'].includes(e.key.toLowerCase()))motion();else if(['o','щ'].includes(e.key.toLowerCase()))openOverview();
   });
   viewport.addEventListener('pointerdown',e=>{if(!interactive(e.target)&&e.isPrimary)pointerStart={x:e.clientX,y:e.clientY,id:e.pointerId};});
@@ -193,6 +211,6 @@
   window.addEventListener('beforeprint',()=>{printMode=true;themeBeforePrint=document.body.dataset.theme;setTheme('light');stopEffects();updateCase(0,false);});
   window.addEventListener('afterprint',()=>{printMode=false;if(themeBeforePrint)setTheme(themeBeforePrint);play();});
   window.__go=go;
-  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,forceMotion,motionEnabled:!paused&&(!reduced.matches||forceMotion),reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerChoice});
+  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,forceMotion,motionEnabled:!paused&&(!reduced.matches||forceMotion),reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerPhase:$('#hopper').dataset.phase});
   go(fromHash());
 })();

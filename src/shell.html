@@ -15,7 +15,7 @@
 <div id="stage">
 <header class="deck-header"><a href="{{REPOSITORY_URL}}" target="_blank" rel="noopener noreferrer" class="wordmark"><span class="logo-star" aria-hidden="true">★</span> Star Guard</a><nav id="chapters" aria-label="Главы"></nav><span class="edition">STARCHECKER / 2026</span></header>
 {{SLIDES}}
-<div id="hopper" aria-hidden="true">★</div>
+<template id="star-template">{{STAR_MODEL}}</template><div id="hopper" aria-hidden="true"><span class="traveler-shadow"></span><span class="traveler-body"><span class="traveler-spin"></span></span></div>
 <footer class="deck-footer"><span>StarChecker <span class="footer-rule"></span> {{EVENT}}</span><span id="page-label">01 / 12</span></footer>
 </div>
 </main>
@@ -29,7 +29,6 @@
 <div class="settings-list">
 <div><button id="motion-button" aria-pressed="false">Включить анимации</button><p id="motion-status">Движение персонажа, графиков и элементов слайдов.</p></div>
 <div><button id="theme-button" aria-pressed="false">Тёмная тема</button><p>Изменить фон и цвета. Выбор сохраняется.</p></div>
-<div><label for="traveler-select">Перемещающийся персонаж</label><select id="traveler-select" aria-label="Перемещающийся персонаж">{{TRAVELER_OPTIONS}}</select><p>«По слайду» выбирает образ под содержание.</p></div>
 <div><button id="notes-button" aria-expanded="false">Показать заметки докладчика</button><p>Текст, который помогает вести выступление.</p></div>
 <div><button id="fullscreen-button">Открыть на весь экран</button><p>Если браузер поддерживает полноэкранный режим.</p></div>
 </div></dialog>

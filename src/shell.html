@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Star Guard — объяснимая оценка подозрительности звёзд GitHub. Презентация команды StarChecker.">
+<title>{{TITLE}} — StarChecker</title>
+<style>{{FONTS}}
+{{CSS}}</style>
+</head>
+<body>
+<a class="skip" href="#controls">К управлению презентацией</a>
+<main id="viewport" aria-label="Презентация Star Guard">
+<div id="stage">
+<header class="deck-header"><a href="{{REPOSITORY_URL}}" target="_blank" rel="noopener noreferrer" class="wordmark"><span class="logo-star" aria-hidden="true">★</span> Star Guard</a><nav id="chapters" aria-label="Главы"></nav><span class="edition">STARCHECKER / 2026</span></header>
+{{SLIDES}}
+<div id="hopper" aria-hidden="true">★</div>
+<footer class="deck-footer"><span>StarChecker <span class="footer-rule"></span> {{EVENT}}</span><span id="page-label">01 / 12</span></footer>
+</div>
+</main>
+<div class="progress" aria-hidden="true"><i id="progress"></i></div>
+<nav class="controls" id="controls" aria-label="Управление слайдами">
+<button id="prev" aria-label="Предыдущий слайд" title="←">←</button><output id="counter" aria-live="polite">1 / 12</output><button id="next" aria-label="Следующий слайд" title="→ или пробел">→</button>
+<span class="divider"></span><button id="overview-button" aria-label="Все слайды" title="O — все слайды">▦</button><button id="notes-button" aria-label="Заметки докладчика" title="N — заметки" aria-expanded="false">N</button><button id="motion-button" aria-label="Приостановить анимации" title="M — анимации" aria-pressed="false">Ⅱ</button><button id="fullscreen-button" aria-label="Полный экран" title="F — полный экран">⛶</button>
+</nav>
+<aside id="notes" hidden aria-label="Заметки докладчика"><strong id="note-heading"></strong><p id="note-text"></p></aside>
+<dialog id="overview" aria-labelledby="overview-title"><header><div><small>STAR GUARD</small><h2 id="overview-title">Все слайды</h2></div><button id="overview-close" aria-label="Закрыть обзор">×</button></header><div class="overview-grid">{{OVERVIEW}}</div><p>← → — навигация · N — заметки · F — полный экран · M — пауза · O — обзор</p></dialog>
+<noscript><div class="noscript">JavaScript отключён. Слайды доступны ниже в режиме чтения.</div><style>body{overflow:auto}#viewport{position:static}#stage{position:static;transform:none!important}section.slide{position:relative;display:flex;opacity:1;visibility:visible}header.deck-header,.deck-footer,.controls,.progress{display:none}</style></noscript>
+<script id="deck-data" type="application/json">{{DATA}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

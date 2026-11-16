@@ -6,11 +6,11 @@
   const slides = $$('.slide'), stage = $('#stage'), viewport = $('#viewport');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const exporting = new URLSearchParams(location.search).get('export') === '1';
-  let current = -1, paused = false, printMode = false, caseIndex = 0;
+  let current = -1, paused = false, forceMotion = false, printMode = false, caseIndex = 0;
   let travelerChoice = 'auto', themeBeforePrint = null;
   let generation = 0, pointerStart = null, ignoreClickUntil = 0;
   const timers = new Set(), frames = new Set(), effects = new Set();
-  const motionAllowed = () => !paused && !reduced.matches && !exporting && !printMode && !document.hidden;
+  const motionAllowed = () => !paused && (!reduced.matches || forceMotion) && !exporting && !printMode && !document.hidden;
   const later = (fn, ms) => { const id = setTimeout(() => { timers.delete(id); fn(); }, ms); timers.add(id); return id; };
   const every = (fn, ms) => { const id = setInterval(fn, ms); timers.add(id); return id; };
   const frame = fn => { const id = requestAnimationFrame(t => { frames.delete(id); fn(t); }); frames.add(id); return id; };
@@ -33,21 +33,35 @@
   const params=new URLSearchParams(location.search);
   const saved=key=>{try{return localStorage.getItem('presentation-kit:'+key);}catch{return null;}};
   const save=(key,value)=>{try{localStorage.setItem('presentation-kit:'+key,value);}catch{/* file previews can deny local storage */}};
-  const setTheme=(value,persist=false)=>{const theme=value==='dark'?'dark':'light';document.body.dataset.theme=theme;$('#theme-button').setAttribute('aria-pressed',String(theme==='dark'));$('#theme-button').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');if(persist)save('theme',theme);};
+  const motionPreference=exporting?'system':(params.get('motion') || saved('motion') || 'system');
+  forceMotion=motionPreference==='on'; paused=motionPreference==='off';
+  const syncMotionUI=()=>{
+    const systemBlocked=reduced.matches&&!forceMotion;
+    const on=!paused&&!systemBlocked;
+    document.body.classList.toggle('motion-forced',forceMotion);
+    document.body.classList.toggle('reduced',systemBlocked);
+    document.body.classList.toggle('paused',paused);
+    const label=on?'Выключить анимации':'Включить анимации';
+    $('#motion-button').textContent=label;$('#motion-button').setAttribute('aria-label',label);$('#motion-button').setAttribute('aria-pressed',String(on));
+    $('#motion-status').textContent=on?'Анимации включены: персонаж, графики и события.':systemBlocked&&!paused?'На устройстве включено уменьшение движения. Можно включить анимации только для этой презентации.':'Анимации выключены. Слайды остаются доступны.';
+    $('#motion-notice').hidden=exporting||paused||!systemBlocked;
+  };
+  syncMotionUI();
+  const setTheme=(value,persist=false)=>{const theme=value==='dark'?'dark':'light';document.body.dataset.theme=theme;$('#theme-button').setAttribute('aria-pressed',String(theme==='dark'));$('#theme-button').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');$('#theme-button').textContent=theme==='dark'?'Включить светлую тему':'Включить тёмную тему';if(persist)save('theme',theme);};
   setTheme(params.get('theme') || (exporting ? 'light' : saved('theme')) || appearance.default_theme);
   const choices=['auto',...Object.keys(appearance.traveler.characters)];
   const requested=params.get('traveler') || (!exporting && saved('traveler'));
   if(choices.includes(requested))travelerChoice=requested;
-  const setTraveler=()=>{const kind=travelerChoice==='auto'?(appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default):travelerChoice;const glyph=appearance.traveler.characters[kind] || '★';$('#hopper').textContent=glyph;$('#hopper').dataset.kind=kind;$('#traveler-button').textContent=glyph;$('#traveler-button').setAttribute('aria-label','Персонаж: '+(names[travelerChoice] || travelerChoice));};
+  const setTraveler=()=>{const kind=travelerChoice==='auto'?(appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default):travelerChoice;const glyph=appearance.traveler.characters[kind] || '★';$('#hopper').textContent=glyph;$('#hopper').dataset.kind=kind;$('#traveler-select').value=travelerChoice;};
   const theme=()=>setTheme(document.body.dataset.theme==='dark'?'light':'dark',true);
   const traveler=()=>{travelerChoice=choices[(choices.indexOf(travelerChoice)+1)%choices.length];save('traveler',travelerChoice);setTraveler();play();};
-  $('#theme-button').addEventListener('click',theme);$('#traveler-button').addEventListener('click',traveler);
+  $('#theme-button').addEventListener('click',theme);$('#traveler-select').addEventListener('change',e=>{travelerChoice=e.target.value;save('traveler',travelerChoice);setTraveler();play();});
   const format = n => Math.round(n).toLocaleString('ru-RU');
   const level = v => v >= 85 ? ['critical', '#dc347a'] : v >= 60 ? ['high', '#dc651b'] : v >= 30 ? ['medium', '#b7740b'] : ['low', '#078659'];
   const fit = () => { stage.style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; };
   window.addEventListener('resize', fit); fit();
   document.body.classList.toggle('export-mode', exporting);
-  document.body.classList.toggle('reduced', reduced.matches);
+  syncMotionUI();
 
   // Illustrative charts: these arrays are deliberately separate from measured results.
   const bars = (selector, values, hot) => {
@@ -139,20 +153,28 @@
   }
   const next=()=>go(current+1),prev=()=>go(current-1);
   $('#next').addEventListener('click',next);$('#prev').addEventListener('click',prev);
-  const notes=()=>{const hidden=!$('#notes').hidden;$('#notes').hidden=hidden;$('#notes-button').setAttribute('aria-expanded',String(!hidden));};
+  const settings=$('#settings');
+  $('#settings-button').addEventListener('click',()=>settings.showModal());
+  $('#settings-close').addEventListener('click',()=>settings.close());
+  const notes=()=>{settings.close();const hidden=!$('#notes').hidden;$('#notes').hidden=hidden;$('#notes-button').setAttribute('aria-expanded',String(!hidden));$('#notes-button').textContent=hidden?'Показать заметки докладчика':'Скрыть заметки докладчика';};
   $('#notes-button').addEventListener('click',notes);
   const overview=$('#overview');
   const openOverview=()=>{if(overview.open){overview.close();return;}overview.showModal();};
   $('#overview-button').addEventListener('click',openOverview);$('#overview-close').addEventListener('click',()=>overview.close());
   $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>{go(Number(b.dataset.goto));overview.close();}));
-  const motion=()=>{paused=!paused;document.body.classList.toggle('paused',paused);$('#motion-button').setAttribute('aria-pressed',String(paused));$('#motion-button').setAttribute('aria-label',paused?'Продолжить анимации':'Приостановить анимации');$('#motion-button').textContent=paused?'▶':'Ⅱ';play();};
+  const motion=()=>{
+    if(paused || (reduced.matches&&!forceMotion)){paused=false;forceMotion=true;save('motion','on');}
+    else{paused=true;forceMotion=false;save('motion','off');}
+    syncMotionUI();play();
+  };
   $('#motion-button').addEventListener('click',motion);
-  const fullscreen=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#fullscreen-button').title='Полноэкранный режим недоступен в этом просмотрщике';}};
+  $('#enable-motion').addEventListener('click',motion);
+  const fullscreen=async()=>{settings.close();try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#fullscreen-button').title='Полноэкранный режим недоступен в этом просмотрщике';}};
   $('#fullscreen-button').addEventListener('click',fullscreen);
   $$('[data-case]').forEach(b=>b.addEventListener('click',()=>{stopEffects();updateCase(Number(b.dataset.case));}));
   const interactive=target=>target instanceof Element && target.closest('button,a,input,textarea,select,dialog,[contenteditable="true"]');
   document.addEventListener('keydown',e=>{
-    if(overview.open || interactive(e.target) || e.ctrlKey || e.altKey || e.metaKey)return;
+    if(overview.open || settings.open || interactive(e.target) || e.ctrlKey || e.altKey || e.metaKey)return;
     if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}
     else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
     else if(e.key==='Home'){e.preventDefault();go(0);}else if(e.key==='End'){e.preventDefault();go(slides.length-1);}
@@ -166,11 +188,11 @@
   viewport.addEventListener('click',e=>{if(interactive(e.target)||performance.now()<ignoreClickUntil)return;(e.clientX>innerWidth/3?next:prev)();});
   const fromHash=()=>{const m=/^#slide-(\d+)$/.exec(location.hash);return m?Number(m[1])-1:0;};
   window.addEventListener('hashchange',()=>go(fromHash()));
-  reduced.addEventListener('change',()=>{document.body.classList.toggle('reduced',reduced.matches);play();});
+  reduced.addEventListener('change',()=>{syncMotionUI();play();});
   document.addEventListener('visibilitychange',()=>play());
   window.addEventListener('beforeprint',()=>{printMode=true;themeBeforePrint=document.body.dataset.theme;setTheme('light');stopEffects();updateCase(0,false);});
   window.addEventListener('afterprint',()=>{printMode=false;if(themeBeforePrint)setTheme(themeBeforePrint);play();});
   window.__go=go;
-  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerChoice});
+  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,forceMotion,motionEnabled:!paused&&(!reduced.matches||forceMotion),reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerChoice});
   go(fromHash());
 })();

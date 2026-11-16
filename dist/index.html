@@ -327,7 +327,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 .closing{justify-content:center;padding-top:150px}.closing .eyebrow{color:var(--blue)}.closing h2{font-size:128px;letter-spacing:-7px;line-height:1.08;margin-bottom:32px;z-index:3}.closing-question{font-size:40px;color:var(--muted);margin-bottom:65px}.closing-spark{position:absolute;right:70px;top:25px;font-size:570px;line-height:1;color:#f6ce42;transform:rotate(14deg);z-index:0}.active .closing-spark{animation:hero-float 7s ease-in-out infinite}.closing-links{display:flex;gap:38px;align-items:center;z-index:3}.closing-links .qr-placeholder{width:120px;height:120px}.closing-links .qr-block p{display:none}.closing-links>div:nth-child(2)>.mono{font-size:17px;color:var(--muted)}.closing-links a{display:block;font-size:29px;margin:14px 0}.closing-links a span{color:var(--blue);margin-left:12px}.closing-links p{font-size:23px;color:var(--muted)}.closing-links>.mascot{margin-left:65px;width:150px;height:150px}#confetti{position:absolute;inset:0;pointer-events:none;z-index:1}.confetti-piece{position:absolute;width:9px;height:9px;border-radius:2px;animation:confetti 4.5s ease-out infinite;animation-delay:var(--delay);background:var(--piece-color);left:var(--x);top:90px}@keyframes confetti{0%{opacity:0;transform:translateY(0) rotate(0)}10%{opacity:1}100%{opacity:0;transform:translateY(800px) rotate(400deg)}}
 /* Stop both CSS and JS through the runtime. Export has a deterministic state. */
 body.paused *,body.paused *:before,body.paused *:after{animation-play-state:paused!important}body.reduced .reveal,body.export-mode .reveal{animation:none!important;opacity:1!important;transform:none!important}body.reduced *,body.export-mode *{animation:none!important;transition:none!important}body.reduced #hopper,body.export-mode #hopper,body.reduced #confetti,body.export-mode #confetti{display:none}body.export-mode .controls,body.export-mode .progress,body.export-mode #notes{display:none}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.reveal{opacity:1!important;transform:none!important}#hopper,#confetti{display:none}}
+@media(prefers-reduced-motion:reduce){body:not(.motion-forced) *,body:not(.motion-forced) *:before,body:not(.motion-forced) *:after{animation:none!important;transition:none!important}body:not(.motion-forced) .reveal{opacity:1!important;transform:none!important}body:not(.motion-forced) #hopper,body:not(.motion-forced) #confetti{display:none}}
 @media(max-width:650px){.controls{bottom:8px;gap:0;padding:4px}.controls button{width:33px}.controls output{min-width:52px}.overview-grid{grid-template-columns:repeat(2,1fr)}dialog{padding:20px}.controls .divider{margin:0 2px}}
 @page{size:20in 11.25in;margin:0}
 @media print{html,body{width:1920px;height:auto;overflow:visible;background:var(--paper);print-color-adjust:exact;-webkit-print-color-adjust:exact}#viewport{position:static}#stage{position:static;width:1920px;height:auto;overflow:visible;transform:none!important}.slide{position:relative!important;display:flex;width:1920px;height:1080px;visibility:visible!important;opacity:1!important;page-break-after:always;break-after:page;padding-bottom:95px}.slide:last-of-type{break-after:auto;page-break-after:auto}.product{display:grid}.deck-header,.deck-footer,.controls,.progress,.skip,#hopper,#notes,dialog,#confetti{display:none!important}*,*:before,*:after{animation:none!important;transition:none!important}.reveal{opacity:1!important;transform:none!important}.slide:before{content:attr(data-page);position:absolute;right:112px;bottom:35px;font:500 20px var(--mono);color:var(--muted)}.ticker{bottom:48px}.cover-qr{bottom:110px}}
@@ -357,6 +357,12 @@ body.paused .reveal,body.paused .timeseries i,body.paused .burst-bars i{animatio
 /* Keep the score stamp separate from the repository card in both themes. */
 .trust-stamp{top:25px;left:0;width:270px;min-height:150px;z-index:3}.stamp-value{font-size:42px;letter-spacing:-2px;white-space:nowrap}
 body[data-theme=dark] .member:nth-child(1){--member-color:#8ca7ff!important}body[data-theme=dark] .member:nth-child(2){--member-color:#b79aff!important}body[data-theme=dark] .member:nth-child(3){--member-color:#ff86b8!important}body[data-theme=dark] .member:nth-child(4){--member-color:#66d6a4!important}body[data-theme=dark] .member:nth-child(5){--member-color:#f0bc69!important}
+
+/* Labeled, touch-sized controls. Advanced actions stay in a readable dialog. */
+.controls{max-width:calc(100vw - 16px);gap:4px;padding:6px}.controls button{width:auto;min-height:44px;height:auto;padding:0 12px;font-size:14px;white-space:nowrap;font-weight:550}.controls output{min-width:50px}.controls #settings-button{background:var(--blue);color:var(--paper)}
+#settings{width:min(480px,calc(100vw - 24px));padding:24px;max-height:calc(100dvh - 24px)}#settings header{margin-bottom:18px}#settings header button{font-size:16px;padding:10px 14px;border-radius:9px;background:var(--white);border:1px solid var(--line)}#settings h2{font-size:28px}.settings-list{display:grid;gap:18px}.settings-list>div{border-top:1px solid var(--line);padding-top:15px}.settings-list button,.settings-list select{font:550 17px var(--body);width:100%;min-height:46px;text-align:left;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--white);color:var(--ink)}.settings-list button:hover{border-color:var(--blue)}.settings-list label{display:block;font-size:16px;font-weight:600;margin-bottom:9px}.settings-list p{font-size:14px;line-height:1.45;color:var(--muted);margin-top:7px}.motion-notice{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);z-index:40;background:var(--white);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 15px;width:max-content;max-width:calc(100vw - 24px);display:flex;gap:12px;align-items:center;font-size:14px;box-shadow:0 10px 30px #0002}.motion-notice[hidden]{display:none}.motion-notice button{font:600 14px var(--body);border:0;border-radius:8px;background:var(--blue);color:var(--paper);padding:11px 12px}.motion-notice span{max-width:290px}body.export-mode .motion-notice{display:none}
+@media(max-width:650px){.controls{bottom:8px;gap:2px;padding:4px}.controls button{padding:0 8px;font-size:12px;min-height:44px}.controls output{min-width:39px;font-size:11px}#settings{padding:20px}.motion-notice{bottom:72px;font-size:13px}}
+@media print{.motion-notice,#settings{display:none!important}}
 </style>
 </head>
 <body>
@@ -427,12 +433,21 @@ body[data-theme=dark] .member:nth-child(1){--member-color:#8ca7ff!important}body
 </main>
 <div class="progress" aria-hidden="true"><i id="progress"></i></div>
 <nav class="controls" id="controls" aria-label="Управление слайдами">
-<button id="prev" aria-label="Предыдущий слайд" title="←">←</button><output id="counter" aria-live="polite">1 / 12</output><button id="next" aria-label="Следующий слайд" title="→ или пробел">→</button>
-<span class="divider"></span><button id="overview-button" aria-label="Все слайды" title="O — все слайды">▦</button><button id="notes-button" aria-label="Заметки докладчика" title="N — заметки" aria-expanded="false">N</button><button id="motion-button" aria-label="Приостановить анимации" title="M — анимации" aria-pressed="false">Ⅱ</button><button id="theme-button" aria-label="Включить тёмную тему" title="T — тема" aria-pressed="false">◐</button><button id="traveler-button" aria-label="Персонаж: автоматически по слайду" title="P — сменить персонажа">★</button><button id="fullscreen-button" aria-label="Полный экран" title="F — полный экран">⛶</button>
+<button id="prev" aria-label="Предыдущий слайд" title="Стрелка влево">← Назад</button><output id="counter" aria-live="polite">1 / 12</output><button id="next" aria-label="Следующий слайд" title="Стрелка вправо">Далее →</button>
+<button id="overview-button" aria-label="Все слайды" title="O — все слайды">Слайды</button><button id="settings-button" aria-haspopup="dialog" aria-controls="settings">Настройки</button>
 </nav>
+<div class="motion-notice" id="motion-notice" hidden><span>Анимации отключены настройками устройства.</span><button id="enable-motion">Включить</button></div>
+<dialog id="settings" aria-labelledby="settings-title"><header><h2 id="settings-title">Настройки</h2><button id="settings-close" aria-label="Закрыть настройки">Готово</button></header>
+<div class="settings-list">
+<div><button id="motion-button" aria-pressed="false">Включить анимации</button><p id="motion-status">Движение персонажа, графиков и элементов слайдов.</p></div>
+<div><button id="theme-button" aria-pressed="false">Тёмная тема</button><p>Изменить фон и цвета. Выбор сохраняется.</p></div>
+<div><label for="traveler-select">Перемещающийся персонаж</label><select id="traveler-select" aria-label="Перемещающийся персонаж"><option value="auto">По слайду</option><option value="star">Звезда</option><option value="shield">Щит</option><option value="bug">Жучок</option><option value="owl">Сова</option><option value="packet">Пакет данных</option></select><p>«По слайду» выбирает образ под содержание.</p></div>
+<div><button id="notes-button" aria-expanded="false">Показать заметки докладчика</button><p>Текст, который помогает вести выступление.</p></div>
+<div><button id="fullscreen-button">Открыть на весь экран</button><p>Если браузер поддерживает полноэкранный режим.</p></div>
+</div></dialog>
 <aside id="notes" hidden aria-label="Заметки докладчика"><strong id="note-heading"></strong><p id="note-text"></p></aside>
 <dialog id="overview" aria-labelledby="overview-title"><header><div><small>STAR GUARD</small><h2 id="overview-title">Все слайды</h2></div><button id="overview-close" aria-label="Закрыть обзор">×</button></header><div class="overview-grid"><button data-goto="0"><b>01 / Вступление</b><span>Star Guard</span></button><button data-goto="1"><b>02 / Вступление</b><span>Цена сигнала доверия</span></button><button data-goto="2"><b>03 / Команда</b><span>Команда StarChecker</span></button><button data-goto="3"><b>04 / Продукт</b><span>Расширение и MCP</span></button><button data-goto="4"><b>05 / Архитектура</b><span>Архитектура решения</span></button><button data-goto="5"><b>06 / Алгоритмы</b><span>Шесть эвристик и score</span></button><button data-goto="6"><b>07 / Алгоритмы</b><span>История внутри суток</span></button><button data-goto="7"><b>08 / Тестирование</b><span>Методика тестирования</span></button><button data-goto="8"><b>09 / Тестирование</b><span>Результаты прогона</span></button><button data-goto="9"><b>10 / Тестирование</b><span>Калибровка и нагрузка</span></button><button data-goto="10"><b>11 / Дальше</b><span>Ограничения и следующие шаги</span></button><button data-goto="11"><b>12 / Финал</b><span>Спасибо за внимание</span></button></div><p>← → — навигация · N — заметки · F — полный экран · M — пауза · O — обзор · T — тема · P — персонаж</p></dialog>
-<noscript><div class="noscript">JavaScript отключён. Слайды доступны ниже в режиме чтения.</div><style>body{overflow:auto}#viewport{position:static}#stage{position:static;transform:none!important}section.slide{position:relative;display:flex;opacity:1;visibility:visible}header.deck-header,.deck-footer,.controls,.progress{display:none}</style></noscript>
+<noscript><div class="noscript">Просмотрщик не запускает интерактивность. Скачайте HTML и откройте в браузере. Ниже доступен режим чтения.</div><style>body{overflow:auto}#viewport{position:static}#stage{position:static;transform:none!important}section.slide{position:relative;display:flex;opacity:1;visibility:visible}header.deck-header,.deck-footer,.controls,.progress{display:none}</style></noscript>
 <script id="deck-data" type="application/json">{"title":"Star Guard","subtitle":"Звёзды — сигнал.\nПроверьте, чему доверяете.","event":"ИТМО · DevDays Fall 2026","team":"StarChecker","repository_url":"https://github.com/StarChecker/star-guard","landing_url":"","qr_asset":"","test_date":"12.11.2026","team_members":[{"handle":"h0o0p0e","name":"","role":""},{"handle":"Ar6yZxZ","name":"","role":""},{"handle":"mpstrkv","name":"","role":""},{"handle":"nenerower","name":"","role":""},{"handle":"writenowme","name":"","role":""}],"heuristics":[{"key":"daily_burst","label":"Всплески по дням","weight":30,"active":true},{"key":"dev_activity","label":"Звёзды без разработки","weight":25,"active":true},{"key":"fork_ratio","label":"Форки у молодого репо","weight":20,"active":true},{"key":"intraday_burst","label":"Всплески внутри суток","weight":10,"active":false},{"key":"star_drops","label":"Массовые отписки","weight":10,"active":false},{"key":"hourly_profile","label":"Нетипичные часы","weight":5,"active":false}],"cases":[{"repo":"facebook/react","score":13,"reason":"Стабильный рост и активная разработка","hits":[]},{"repo":"deepseek-ai/DeepInfer","score":67,"reason":"1 071 звезда за день при обычном темпе 3","hits":["daily_burst"]},{"repo":"Minireel/HGhub","score":85,"reason":"Мало разработки, необычное соотношение форков","hits":["dev_activity","fork_ratio"]}],"results":[{"repo":"Minireel/HGhub","score":85,"group":"flagged"},{"repo":"deepseek-ai/DeepInfer","score":67,"group":"flagged"},{"repo":"janestreet/agent_skills","score":53,"group":"flagged"},{"repo":"huamidev/GestaltX","score":47,"group":"flagged"},{"repo":"Adkid-Zephyr/anti-defensive…","score":44,"group":"flagged"},{"repo":"spring-projects/spring-boot","score":20,"group":"organic"},{"repo":"facebook/react","score":13,"group":"organic"},{"repo":"microsoft/vscode","score":13,"group":"organic"},{"repo":"torvalds/linux","score":0,"group":"organic"},{"repo":"ollama/ollama","score":0,"group":"organic"},{"repo":"sindresorhus/awesome","score":0,"group":"organic"},{"repo":"codecrafters-io/build-your-own-x","score":0,"group":"organic"},{"repo":"donnemartin/system-design-primer","score":0,"group":"organic"},{"repo":"NotRexed/Hookshot","score":0,"group":"organic"},{"repo":"sherlock-project/sherlock","score":96,"group":"viral"},{"repo":"dockur/windows","score":36,"group":"viral"}],"tracker":{"repositories":10559,"interval_seconds":300,"cycle_seconds":270,"reported_requests_hour":1300,"reported_limit_hour":5000},"load":[{"threads":1,"seconds":500,"comment":"Не укладывается в 300 секунд","status":"slow"},{"threads":2,"seconds":270,"comment":"Без ошибок в предоставленном тесте","status":"ok"},{"threads":4,"seconds":65,"comment":"Около половины запросов отклонено","status":"errors"}],"appearance":{"default_theme":"light","traveler":{"default":"star","per_slide":{"s4":"packet","s8":"bug","s11":"shield"},"characters":{"star":"★","shield":"⛨","bug":"🐞","owl":"🦉","packet":"⬡"}}},"notes":{"s1":"Здравствуйте, мы StarChecker. Star Guard помогает проверить, насколько подозрительно выглядит рост звёзд GitHub. Показываем объяснимую оценку рядом с репозиторием. На обложке условная иллюстрация, не измерение конкретного проекта.","s3":"Звёзды часто используют при выборе библиотеки. Мы ищем сочетание аномального роста и признаков репозитория. Всплеск может быть вызван и обычной популярностью: один признак не доказывает накрутку. Пример +1 413 взят из исходных материалов.","s2":"Представьте пятерых участников по заполненным именам и ролям. Если поля ещё пустые, на слайде видны честные заглушки. Не назначайте роли по предположению.","s5":"Два входа в один продукт: человек видит карточку расширения на GitHub, AI-агент обращается через MCP. На слайде исходные скриншоты. Показанные на них числа относятся к конкретным демонстрациям, а не к общему качеству детектора.","s4":"Схема воспроизводит описание команды: Spring Boot 4, Java 25, GitHub API, PostgreSQL и резервный индекс GH Archive. Токен выбирает путь получения данных, но доступ зависит от прав и ограничений GitHub. Актуальное поведение исходного сервиса в рамках этой переработки не проверялось.","s7":"Шесть весов в сумме дают 100 процентов. В предоставленном прогоне работали три проверки. Правило пересчёта весов при недоступных сигналах в исходных материалах не раскрыто; не выводите формулу по одной таблице. Score — индекс подозрительности, не калиброванная вероятность. Примеры переключаются автоматически, кнопка фиксирует выбранный пример.","s6":"Сравниваем дневную агрегацию и историю счётчика с шагом пять минут. Не утверждаем, что GitHub API умеет только дневные данные: формат application/vnd.github.star+json поддерживает время установки звезды. Снимки позволяют наблюдать изменения счётчика и падения, но не восстанавливают историю до запуска трекера. Две кривые — условные схемы, их форма сама по себе не доказывает причину роста.","s8":"Источник — материалы прогона 12 ноября 2026. Разметка команды: 5 подозрительных, 9 обычных и 2 вирусных органических проекта. Окно 30 дней, Docker, API, порог 30. Методика независимой разметки и отдельная контрольная выборка не представлены. Три внутридневные проверки в этой оценке ещё не участвовали.","s9":"Показываем все 16 результатов, не скрывая ошибки. Пять из пяти размеченных случаев накрутки получили medium или выше. Девять обычных проектов остались low. Оба органических проекта с вирусным ростом получили ложное предупреждение. Всего органических проектов 11, поэтому 9 из 9 относится только к подгруппе без вирусной волны. Это небольшой калибровочный прогон, а не доказательство точности на любом GitHub.","s10":"Псевдодифф показывает смысл изменений эвристик. Нагрузка: один поток 500 секунд, два 270 без ошибок, четыре 65 с большим числом отказов. Быстрота четырёх потоков не означает успешный полный опрос. Запас двух потоков относительно 300 секунд — 30 секунд. Параметры пакетирования API и повторных попыток в архиве не зафиксированы.","s11":"Главное известное ограничение — вирусный рост. Sherlock получил 96 в предоставленном прогоне. План: накопить внутридневную историю, провести независимую контрольную оценку и исследовать аккаунты ферм. Контрольная выборка — предложение этой переработки, не уже выполненная работа.","s12":"Спасибо за внимание. Готовы обсудить признаки, ограничения и применение. QR должен вести на подтверждённый лендинг. Пока адрес не задан, остаётся явное место под QR; ссылка на репозиторий уже работает."}}</script>
 <script>(() => {
   'use strict';
@@ -442,11 +457,11 @@ body[data-theme=dark] .member:nth-child(1){--member-color:#8ca7ff!important}body
   const slides = $$('.slide'), stage = $('#stage'), viewport = $('#viewport');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const exporting = new URLSearchParams(location.search).get('export') === '1';
-  let current = -1, paused = false, printMode = false, caseIndex = 0;
+  let current = -1, paused = false, forceMotion = false, printMode = false, caseIndex = 0;
   let travelerChoice = 'auto', themeBeforePrint = null;
   let generation = 0, pointerStart = null, ignoreClickUntil = 0;
   const timers = new Set(), frames = new Set(), effects = new Set();
-  const motionAllowed = () => !paused && !reduced.matches && !exporting && !printMode && !document.hidden;
+  const motionAllowed = () => !paused && (!reduced.matches || forceMotion) && !exporting && !printMode && !document.hidden;
   const later = (fn, ms) => { const id = setTimeout(() => { timers.delete(id); fn(); }, ms); timers.add(id); return id; };
   const every = (fn, ms) => { const id = setInterval(fn, ms); timers.add(id); return id; };
   const frame = fn => { const id = requestAnimationFrame(t => { frames.delete(id); fn(t); }); frames.add(id); return id; };
@@ -469,21 +484,35 @@ body[data-theme=dark] .member:nth-child(1){--member-color:#8ca7ff!important}body
   const params=new URLSearchParams(location.search);
   const saved=key=>{try{return localStorage.getItem('presentation-kit:'+key);}catch{return null;}};
   const save=(key,value)=>{try{localStorage.setItem('presentation-kit:'+key,value);}catch{/* file previews can deny local storage */}};
-  const setTheme=(value,persist=false)=>{const theme=value==='dark'?'dark':'light';document.body.dataset.theme=theme;$('#theme-button').setAttribute('aria-pressed',String(theme==='dark'));$('#theme-button').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');if(persist)save('theme',theme);};
+  const motionPreference=exporting?'system':(params.get('motion') || saved('motion') || 'system');
+  forceMotion=motionPreference==='on'; paused=motionPreference==='off';
+  const syncMotionUI=()=>{
+    const systemBlocked=reduced.matches&&!forceMotion;
+    const on=!paused&&!systemBlocked;
+    document.body.classList.toggle('motion-forced',forceMotion);
+    document.body.classList.toggle('reduced',systemBlocked);
+    document.body.classList.toggle('paused',paused);
+    const label=on?'Выключить анимации':'Включить анимации';
+    $('#motion-button').textContent=label;$('#motion-button').setAttribute('aria-label',label);$('#motion-button').setAttribute('aria-pressed',String(on));
+    $('#motion-status').textContent=on?'Анимации включены: персонаж, графики и события.':systemBlocked&&!paused?'На устройстве включено уменьшение движения. Можно включить анимации только для этой презентации.':'Анимации выключены. Слайды остаются доступны.';
+    $('#motion-notice').hidden=exporting||paused||!systemBlocked;
+  };
+  syncMotionUI();
+  const setTheme=(value,persist=false)=>{const theme=value==='dark'?'dark':'light';document.body.dataset.theme=theme;$('#theme-button').setAttribute('aria-pressed',String(theme==='dark'));$('#theme-button').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');$('#theme-button').textContent=theme==='dark'?'Включить светлую тему':'Включить тёмную тему';if(persist)save('theme',theme);};
   setTheme(params.get('theme') || (exporting ? 'light' : saved('theme')) || appearance.default_theme);
   const choices=['auto',...Object.keys(appearance.traveler.characters)];
   const requested=params.get('traveler') || (!exporting && saved('traveler'));
   if(choices.includes(requested))travelerChoice=requested;
-  const setTraveler=()=>{const kind=travelerChoice==='auto'?(appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default):travelerChoice;const glyph=appearance.traveler.characters[kind] || '★';$('#hopper').textContent=glyph;$('#hopper').dataset.kind=kind;$('#traveler-button').textContent=glyph;$('#traveler-button').setAttribute('aria-label','Персонаж: '+(names[travelerChoice] || travelerChoice));};
+  const setTraveler=()=>{const kind=travelerChoice==='auto'?(appearance.traveler.per_slide[slides[current]?.id] || appearance.traveler.default):travelerChoice;const glyph=appearance.traveler.characters[kind] || '★';$('#hopper').textContent=glyph;$('#hopper').dataset.kind=kind;$('#traveler-select').value=travelerChoice;};
   const theme=()=>setTheme(document.body.dataset.theme==='dark'?'light':'dark',true);
   const traveler=()=>{travelerChoice=choices[(choices.indexOf(travelerChoice)+1)%choices.length];save('traveler',travelerChoice);setTraveler();play();};
-  $('#theme-button').addEventListener('click',theme);$('#traveler-button').addEventListener('click',traveler);
+  $('#theme-button').addEventListener('click',theme);$('#traveler-select').addEventListener('change',e=>{travelerChoice=e.target.value;save('traveler',travelerChoice);setTraveler();play();});
   const format = n => Math.round(n).toLocaleString('ru-RU');
   const level = v => v >= 85 ? ['critical', '#dc347a'] : v >= 60 ? ['high', '#dc651b'] : v >= 30 ? ['medium', '#b7740b'] : ['low', '#078659'];
   const fit = () => { stage.style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; };
   window.addEventListener('resize', fit); fit();
   document.body.classList.toggle('export-mode', exporting);
-  document.body.classList.toggle('reduced', reduced.matches);
+  syncMotionUI();
 
   // Illustrative charts: these arrays are deliberately separate from measured results.
   const bars = (selector, values, hot) => {
@@ -575,20 +604,28 @@ body[data-theme=dark] .member:nth-child(1){--member-color:#8ca7ff!important}body
   }
   const next=()=>go(current+1),prev=()=>go(current-1);
   $('#next').addEventListener('click',next);$('#prev').addEventListener('click',prev);
-  const notes=()=>{const hidden=!$('#notes').hidden;$('#notes').hidden=hidden;$('#notes-button').setAttribute('aria-expanded',String(!hidden));};
+  const settings=$('#settings');
+  $('#settings-button').addEventListener('click',()=>settings.showModal());
+  $('#settings-close').addEventListener('click',()=>settings.close());
+  const notes=()=>{settings.close();const hidden=!$('#notes').hidden;$('#notes').hidden=hidden;$('#notes-button').setAttribute('aria-expanded',String(!hidden));$('#notes-button').textContent=hidden?'Показать заметки докладчика':'Скрыть заметки докладчика';};
   $('#notes-button').addEventListener('click',notes);
   const overview=$('#overview');
   const openOverview=()=>{if(overview.open){overview.close();return;}overview.showModal();};
   $('#overview-button').addEventListener('click',openOverview);$('#overview-close').addEventListener('click',()=>overview.close());
   $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>{go(Number(b.dataset.goto));overview.close();}));
-  const motion=()=>{paused=!paused;document.body.classList.toggle('paused',paused);$('#motion-button').setAttribute('aria-pressed',String(paused));$('#motion-button').setAttribute('aria-label',paused?'Продолжить анимации':'Приостановить анимации');$('#motion-button').textContent=paused?'▶':'Ⅱ';play();};
+  const motion=()=>{
+    if(paused || (reduced.matches&&!forceMotion)){paused=false;forceMotion=true;save('motion','on');}
+    else{paused=true;forceMotion=false;save('motion','off');}
+    syncMotionUI();play();
+  };
   $('#motion-button').addEventListener('click',motion);
-  const fullscreen=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#fullscreen-button').title='Полноэкранный режим недоступен в этом просмотрщике';}};
+  $('#enable-motion').addEventListener('click',motion);
+  const fullscreen=async()=>{settings.close();try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#fullscreen-button').title='Полноэкранный режим недоступен в этом просмотрщике';}};
   $('#fullscreen-button').addEventListener('click',fullscreen);
   $$('[data-case]').forEach(b=>b.addEventListener('click',()=>{stopEffects();updateCase(Number(b.dataset.case));}));
   const interactive=target=>target instanceof Element && target.closest('button,a,input,textarea,select,dialog,[contenteditable="true"]');
   document.addEventListener('keydown',e=>{
-    if(overview.open || interactive(e.target) || e.ctrlKey || e.altKey || e.metaKey)return;
+    if(overview.open || settings.open || interactive(e.target) || e.ctrlKey || e.altKey || e.metaKey)return;
     if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}
     else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
     else if(e.key==='Home'){e.preventDefault();go(0);}else if(e.key==='End'){e.preventDefault();go(slides.length-1);}
@@ -602,12 +639,12 @@ body[data-theme=dark] .member:nth-child(1){--member-color:#8ca7ff!important}body
   viewport.addEventListener('click',e=>{if(interactive(e.target)||performance.now()<ignoreClickUntil)return;(e.clientX>innerWidth/3?next:prev)();});
   const fromHash=()=>{const m=/^#slide-(\d+)$/.exec(location.hash);return m?Number(m[1])-1:0;};
   window.addEventListener('hashchange',()=>go(fromHash()));
-  reduced.addEventListener('change',()=>{document.body.classList.toggle('reduced',reduced.matches);play();});
+  reduced.addEventListener('change',()=>{syncMotionUI();play();});
   document.addEventListener('visibilitychange',()=>play());
   window.addEventListener('beforeprint',()=>{printMode=true;themeBeforePrint=document.body.dataset.theme;setTheme('light');stopEffects();updateCase(0,false);});
   window.addEventListener('afterprint',()=>{printMode=false;if(themeBeforePrint)setTheme(themeBeforePrint);play();});
   window.__go=go;
-  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerChoice});
+  window.deckState=()=>({slide:current+1,total:slides.length,timers:timers.size,frames:frames.size,effects:effects.size,paused,forceMotion,motionEnabled:!paused&&(!reduced.matches||forceMotion),reduced:reduced.matches,exporting,theme:document.body.dataset.theme,traveler:$('#hopper').dataset.kind,travelerChoice});
   go(fromHash());
 })();
 </script>

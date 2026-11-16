@@ -41,4 +41,5 @@ jobs:
             dist/index.html
             dist/star-guard-deck.pdf
             build/shots/
+            build/mobile-ui/
           if-no-files-found: error

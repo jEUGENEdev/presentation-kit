@@ -21,12 +21,21 @@
 </main>
 <div class="progress" aria-hidden="true"><i id="progress"></i></div>
 <nav class="controls" id="controls" aria-label="Управление слайдами">
-<button id="prev" aria-label="Предыдущий слайд" title="←">←</button><output id="counter" aria-live="polite">1 / 12</output><button id="next" aria-label="Следующий слайд" title="→ или пробел">→</button>
-<span class="divider"></span><button id="overview-button" aria-label="Все слайды" title="O — все слайды">▦</button><button id="notes-button" aria-label="Заметки докладчика" title="N — заметки" aria-expanded="false">N</button><button id="motion-button" aria-label="Приостановить анимации" title="M — анимации" aria-pressed="false">Ⅱ</button><button id="theme-button" aria-label="Включить тёмную тему" title="T — тема" aria-pressed="false">◐</button><button id="traveler-button" aria-label="Персонаж: автоматически по слайду" title="P — сменить персонажа">★</button><button id="fullscreen-button" aria-label="Полный экран" title="F — полный экран">⛶</button>
+<button id="prev" aria-label="Предыдущий слайд" title="Стрелка влево">← Назад</button><output id="counter" aria-live="polite">1 / 12</output><button id="next" aria-label="Следующий слайд" title="Стрелка вправо">Далее →</button>
+<button id="overview-button" aria-label="Все слайды" title="O — все слайды">Слайды</button><button id="settings-button" aria-haspopup="dialog" aria-controls="settings">Настройки</button>
 </nav>
+<div class="motion-notice" id="motion-notice" hidden><span>Анимации отключены настройками устройства.</span><button id="enable-motion">Включить</button></div>
+<dialog id="settings" aria-labelledby="settings-title"><header><h2 id="settings-title">Настройки</h2><button id="settings-close" aria-label="Закрыть настройки">Готово</button></header>
+<div class="settings-list">
+<div><button id="motion-button" aria-pressed="false">Включить анимации</button><p id="motion-status">Движение персонажа, графиков и элементов слайдов.</p></div>
+<div><button id="theme-button" aria-pressed="false">Тёмная тема</button><p>Изменить фон и цвета. Выбор сохраняется.</p></div>
+<div><label for="traveler-select">Перемещающийся персонаж</label><select id="traveler-select" aria-label="Перемещающийся персонаж">{{TRAVELER_OPTIONS}}</select><p>«По слайду» выбирает образ под содержание.</p></div>
+<div><button id="notes-button" aria-expanded="false">Показать заметки докладчика</button><p>Текст, который помогает вести выступление.</p></div>
+<div><button id="fullscreen-button">Открыть на весь экран</button><p>Если браузер поддерживает полноэкранный режим.</p></div>
+</div></dialog>
 <aside id="notes" hidden aria-label="Заметки докладчика"><strong id="note-heading"></strong><p id="note-text"></p></aside>
 <dialog id="overview" aria-labelledby="overview-title"><header><div><small>STAR GUARD</small><h2 id="overview-title">Все слайды</h2></div><button id="overview-close" aria-label="Закрыть обзор">×</button></header><div class="overview-grid">{{OVERVIEW}}</div><p>← → — навигация · N — заметки · F — полный экран · M — пауза · O — обзор · T — тема · P — персонаж</p></dialog>
-<noscript><div class="noscript">JavaScript отключён. Слайды доступны ниже в режиме чтения.</div><style>body{overflow:auto}#viewport{position:static}#stage{position:static;transform:none!important}section.slide{position:relative;display:flex;opacity:1;visibility:visible}header.deck-header,.deck-footer,.controls,.progress{display:none}</style></noscript>
+<noscript><div class="noscript">Просмотрщик не запускает интерактивность. Скачайте HTML и откройте в браузере. Ниже доступен режим чтения.</div><style>body{overflow:auto}#viewport{position:static}#stage{position:static;transform:none!important}section.slide{position:relative;display:flex;opacity:1;visibility:visible}header.deck-header,.deck-footer,.controls,.progress{display:none}</style></noscript>
 <script id="deck-data" type="application/json">{{DATA}}</script>
 <script>{{JS}}</script>
 </body>

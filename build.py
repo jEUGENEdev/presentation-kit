@@ -101,7 +101,9 @@ def fragments(data, root):
     header='<thead><tr><th scope="col">Репозиторий</th><th scope="col">Score</th></tr></thead>'
     tables=f'<table><caption>НАКРУТКА ПО РАЗМЕТКЕ КОМАНДЫ / 5</caption>{header}<tbody>{rows("flagged")}<tr class="group-row"><td colspan="2">ВИРУСНЫЙ РОСТ / 2 ЛОЖНЫХ СИГНАЛА</td></tr>{rows("viral")}</tbody></table><table><caption>ОРГАНИКА БЕЗ ВИРУСНОЙ ВОЛНЫ / 9</caption>{header}<tbody>{rows("organic")}</tbody></table>'
     loads=''.join(f'<div class="load-row {escape(r["status"])}"><div><span>{r["threads"]} {"поток" if r["threads"]==1 else "потока"}</span><b>{r["seconds"]} с</b></div><div class="load-track" aria-hidden="true"><i style="--load:{r["seconds"]/500*100:.1f}%"></i></div><p>{escape(r["comment"])}</p></div>' for r in data['load'])
-    out={'TEAM_MEMBERS':''.join(members),'HEURISTICS':''.join(heuristics),'CASE_BUTTONS':buttons,'RESULT_TABLES':tables,'LOAD_ROWS':loads,'QR_COVER':qr_block(data,root),'QR_FINAL':qr_block(data,root)}
+    labels={'star':'Звезда','shield':'Щит','bug':'Жучок','owl':'Сова','packet':'Пакет данных'}
+    traveler_options='<option value="auto">По слайду</option>'+''.join(f'<option value="{escape(k)}">{escape(labels.get(k,k))}</option>' for k in data.get('appearance',{}).get('traveler',{}).get('characters',{'star':'★'}))
+    out={'TRAVELER_OPTIONS':traveler_options,'TEAM_MEMBERS':''.join(members),'HEURISTICS':''.join(heuristics),'CASE_BUTTONS':buttons,'RESULT_TABLES':tables,'LOAD_ROWS':loads,'QR_COVER':qr_block(data,root),'QR_FINAL':qr_block(data,root)}
     for key in ['TITLE','EVENT','TEAM','TEST_DATE','REPOSITORY_URL']:
         out[key]=escape(data[key.lower()])
     for name in ['popup','mcp','report']:

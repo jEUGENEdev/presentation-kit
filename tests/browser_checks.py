@@ -89,7 +89,7 @@ def run():
             check(first!=spin.evaluate('(e)=>getComputedStyle(e).transform'),'Star stops rotating after landing')
             check(position==live.locator('#hopper').evaluate('(e)=>getComputedStyle(e).transform'),'Idle rotation moves the whole route')
             check(live.locator('.ticker>div').evaluate('(e)=>getComputedStyle(e).animationDuration')=='14s','Ticker remains too slow')
-            check(live.locator('.ticker span').first.bounding_box()['width']>=1920,'Ticker loop leaves a gap')
+            check(live.locator('.ticker span').first.evaluate('(e)=>e.offsetWidth >= e.closest(".ticker").clientWidth'),'Ticker loop leaves a gap')
             folder=ROOT/'build/mobile-ui';folder.mkdir(parents=True,exist_ok=True)
             import base64
             # Freeze at a readable 3D angle for review, then navigation starts fresh motion.

@@ -96,7 +96,7 @@ def run():
             live.evaluate("document.querySelectorAll('.hero-star,#hopper').forEach(e=>e.getAnimations({subtree:true}).forEach(a=>{a.pause();a.currentTime=700;}))")
             live.screenshot(path=str(folder/'star-cover.png'),clip={'x':1080,'y':70,'width':720,'height':530})
             print('STAR_REVIEW:'+base64.b64encode((folder/'star-cover.png').read_bytes()).decode('ascii'))
-            live.locator('#hopper').screenshot(path=str(folder/'star-idle.png'),animations='allow')
+            live.screenshot(path=str(folder/'star-idle.png'),clip=live.locator('#hopper').bounding_box())
             print('STAR_IDLE_REVIEW:'+base64.b64encode((folder/'star-idle.png').read_bytes()).decode('ascii'))
             for i in [5,0,11,7,5,8,11,0]:live.evaluate('(i)=>window.__go(i)',i)
             setting(live,'#motion-button')

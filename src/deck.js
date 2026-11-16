@@ -98,10 +98,20 @@
     if(token!==generation || !motionAllowed())return;
     const hopper=$('#hopper'),body=$('.traveler-body',hopper),spin=$('.traveler-spin',hopper),shadow=$('.traveler-shadow',hopper);
     hopper.dataset.phase='idle';
-    const loop=(element,keys,options)=>{const animation=element.animate(keys,options);effects.add(animation);};
-    loop(spin,[{transform:'rotateX(16deg) rotateY(0deg) rotateZ(-9deg)'},{transform:'rotateX(-12deg) rotateY(180deg) rotateZ(9deg)'},{transform:'rotateX(16deg) rotateY(360deg) rotateZ(-9deg)'}],{duration:6800,iterations:Infinity,easing:'linear'});
-    loop(body,[{transform:'translateY(0) scale(1)'},{transform:'translateY(-9px) scale(1)'},{transform:'translateY(0) scale(1)'}],{duration:2400,iterations:Infinity,easing:'ease-in-out'});
-    loop(shadow,[{transform:'scaleX(1)',opacity:.24},{transform:'scaleX(.72)',opacity:.12},{transform:'scaleX(1)',opacity:.24}],{duration:2400,iterations:Infinity,easing:'ease-in-out'});
+    // Drive idle with the shared frame scheduler. Mobile compositors can retain
+    // a finished WAAPI transform when a new infinite effect takes over.
+    const started=performance.now();
+    const tick=now=>{
+      if(token!==generation || !motionAllowed())return;
+      const elapsed=now-started,turn=elapsed/6800*Math.PI*2;
+      const hover=(1-Math.cos(elapsed/2400*Math.PI*2))/2;
+      spin.style.transform=`rotateX(${16*Math.cos(turn)}deg) rotateY(${elapsed/6800*360%360}deg) rotateZ(${-9*Math.cos(turn)}deg)`;
+      body.style.transform=`translateY(${-9*hover}px) scale(1)`;
+      shadow.style.transform=`scaleX(${1-.28*hover})`;
+      shadow.style.opacity=String(.24-.12*hover);
+      frame(tick);
+    };
+    frame(tick);
   };
   const hops = async (slide, token) => {
     if (!motionAllowed() || token!==generation) return;

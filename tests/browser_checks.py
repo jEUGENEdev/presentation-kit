@@ -59,6 +59,7 @@ def run():
                 page.evaluate('(i)=>window.__go(i)',i)
                 check(page.evaluate('deckState().traveler')=='star','Viewer preference overrode generated mascot')
             page.evaluate('window.__go(5)')
+            page.locator('[data-case="2"]').click()
             padding=page.locator('.heuristic.hit').first.evaluate('(e)=>{const s=getComputedStyle(e);return [parseFloat(s.paddingLeft),parseFloat(s.paddingRight)]}')
             check(min(padding)>=22,'Highlight touches scoring content')
             check(page.locator('.time-scan').count()==0,'Meaningless tracker scan remains')
